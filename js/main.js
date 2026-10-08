@@ -43,14 +43,14 @@ function status(){const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{ti
 status();setInterval(status,6e4);
 /* gallery lightbox */
 const lb=$('#lb'),lim=$('img',lb),gs=$$('.g');let cur=0,opener;
-const show=i=>{cur=(i+gs.length)%gs.length;const s=$('img',gs[cur]);lim.src=s.src;lim.alt=s.alt};
+const show=i=>{cur=(i+gs.length)%gs.length;const s=$('img',gs[cur]);lim.classList.remove('miss');lb.classList.remove('ph');lim.src=s.src;lim.alt=s.alt};
 gs.forEach((g,i)=>g.addEventListener('click',()=>{opener=g;show(i);lb.showModal()}));
 $('.lb-x').onclick=()=>lb.close();$('.lb-p').onclick=()=>show(cur-1);$('.lb-n').onclick=()=>show(cur+1);
 lb.addEventListener('click',e=>{if(e.target===lb)lb.close()});lb.addEventListener('close',()=>opener&&opener.focus());
 lb.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(cur-1);if(e.key==='ArrowRight')show(cur+1)});
 let sx=0;lb.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});lb.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)show(cur+(dx<0?1:-1))});
 /* missing image -> on-brand placeholder */
-const miss=i=>{i.classList.add('miss');(i.closest('.g,.arch,.blob')||i.parentElement).classList.add('ph')};
+const miss=i=>{if(!i.getAttribute('src')||i.closest('#lb'))return;i.classList.add('miss');(i.closest('.g,.arch,.blob')||i.parentElement).classList.add('ph')};
 document.addEventListener('error',e=>{if(e.target.tagName==='IMG')miss(e.target)},true);
 $$('img').forEach(i=>i.complete&&i.naturalWidth===0&&miss(i));
 /* contact form: opens WhatsApp chat with the message prefilled, in a new window */
